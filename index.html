@@ -1,0 +1,528 @@
+<?php
+session_start();
+if (!isset($_SESSION['id'])) {
+    header("Location: index.php");
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estudy - Học IELTS Online</title>
+    <style>
+      :root {
+        --primary-color: #38b6ff;
+        --secondary-color: #075275;
+        --accent-color: #ff7e5f;
+        --background-color: #f8f9fa;
+        --text-color: #333;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      /* Header Styles */
+      .header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo img {
+        width: 40px;
+        height: auto;
+      }
+
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      /* User Info Section */
+      .user-info {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 900;
+      }
+
+      .user-info p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+      }
+
+      /* Navigation Menu */
+      .nav-menu {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .nav-menu a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-menu a:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-top: 100px;
+        padding: 2rem;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Hero Section */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        padding: 4rem 0;
+        align-items: center;
+      }
+
+      .hero-text {
+        padding-right: 2rem;
+      }
+
+      .hero-text h1 {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-text p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-image {
+        position: relative;
+      }
+
+      .hero-image img {
+        width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Features Grid */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 4rem 0;
+      }
+
+      .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .feature-card h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 2rem 0;
+        }
+
+        .nav-menu {
+          display: none;
+          position: fixed;
+          top: 70px;
+          left: 0;
+          width: 100%;
+          background: white;
+          padding: 1rem;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu.active {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .hamburger {
+          display: block;
+          cursor: pointer;
+        }
+
+        .user-info {
+          position: static;
+          margin-top: 1rem;
+        }
+      }
+
+      /* Button Styles */
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+      }
+
+      /* Logout Button */
+      .logout-btn {
+        padding: 0.5rem 1.5rem;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      /* Hamburger Menu Styles */
+      .hamburger {
+        display: none;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 1002;
+      }
+
+      .hamburger-lines {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .hamburger span {
+        display: block;
+        width: 30px;
+        height: 3px;
+        background-color: var(--primary-color);
+        transition: all 0.3s ease-in-out;
+        border-radius: 3px;
+      }
+
+      /* Mobile Menu Styles */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: white;
+        padding: 80px 0 20px;
+        transition: 0.3s ease-in-out;
+        z-index: 1000;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+
+      .mobile-menu.active {
+        right: 0;
+      }
+
+      .mobile-user-info {
+        padding: 20px;
+        background: var(--background-color);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+      }
+
+      .mobile-user-info p {
+        color: var(--secondary-color);
+        margin: 8px 0;
+        font-size: 0.95rem;
+      }
+
+      .mobile-nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .mobile-nav-links a {
+        padding: 15px 20px;
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .mobile-nav-links a:hover {
+        background: rgba(56, 182, 255, 0.1);
+        color: var(--primary-color);
+      }
+
+      .mobile-logout-btn {
+        margin: 20px;
+        display: block;
+        text-align: center;
+        padding: 12px 20px;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-logout-btn:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        transition: all 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .hamburger {
+          display: block;
+        }
+
+        .nav-container .nav-menu,
+        .nav-container .logout-btn {
+          display: none;
+        }
+
+        .hamburger.active span:nth-child(1) {
+          transform: translateY(9px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+          transform: translateY(-9px) rotate(-45deg);
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .overlay.active {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="nav-container">
+        <div class="logo">
+          <img src="Remove-bg.ai_1734260849847.png" alt="Estudy Logo" />
+          <span class="logo-text">Estudy</span>
+        </div>
+
+        <!-- Hamburger Menu Button -->
+        <div class="hamburger">
+          <div class="hamburger-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="nav-menu">
+          <a href="./reading.html">Reading</a>
+          <a href="./listening.html">Listening</a>
+          <a href="./flappy_bird_game/game.html">Game</a>
+          <a href="#">Grammar</a>
+          <a href="./flashcard_basic.html">Vocabulary</a>
+        </nav>
+        <a href="logout.php" class="logout-btn">Đăng xuất</a>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu">
+          <div class="mobile-user-info">
+            <p>
+              Current Date and Time (UTC):
+              <?php echo date('Y-m-d H:i:s'); ?>
+            </p>
+            <p>
+              Current User's Login:
+              <?php echo htmlspecialchars($_SESSION['name']); ?>
+            </p>
+          </div>
+          <div class="mobile-nav-links">
+            <a href="./reading.html">Reading</a>
+            <a href="./listening.html">Listening</a>
+            <a href="./flappy_bird_game/game.html">Game</a>
+            <a href="#">Grammar</a>
+            <a href="./flashcard_basic.html">Vocabulary</a>
+          </div>
+          <a href="logout.php" class="mobile-logout-btn">Đăng xuất</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="overlay"></div>
+
+    <main class="main-content">
+      <section class="hero">
+        <div class="hero-text">
+          <h1>
+            Học IELTS Online<br />cùng
+            <span style="color: var(--primary-color)">Estudy</span>
+          </h1>
+          <p>
+            Nâng cao kỹ năng Reading và Listening với phương pháp học tập hiệu
+            quả và thú vị.
+          </p>
+          <a href="#features" class="btn">Khám phá ngay</a>
+        </div>
+        <div class="hero-image">
+          <img src="https://placehold.co/600x400" alt="IELTS Study" />
+        </div>
+      </section>
+
+      <section id="features" class="features-grid">
+        <div class="feature-card">
+          <h3>IELTS Reading</h3>
+          <p>
+            Luyện tập với các bài đọc theo format IELTS, kèm giải thích chi tiết
+            và chiến thuật làm bài.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>IELTS Listening</h3>
+          <p>
+            Nâng cao kỹ năng nghe với các bài tập được thiết kế theo chuẩn đề
+            thi IELTS.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Vocabulary Building</h3>
+          <p>Học từ vựng thông qua flashcard và trò chơi tương tác hấp dẫn.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Add mobile menu toggle functionality if needed
+      const menuButton = document.querySelector(".hamburger");
+      const navMenu = document.querySelector(".nav-menu");
+
+      if (menuButton) {
+        menuButton.addEventListener("click", () => {
+          navMenu.classList.toggle("active");
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamburger = document.querySelector(".hamburger");
+        const mobileMenu = document.querySelector(".mobile-menu");
+        const overlay = document.querySelector(".overlay");
+
+        function toggleMenu() {
+          hamburger.classList.toggle("active");
+          mobileMenu.classList.toggle("active");
+          overlay.classList.toggle("active");
+          document.body.style.overflow = mobileMenu.classList.contains("active")
+            ? "hidden"
+            : "auto";
+        }
+
+        hamburger.addEventListener("click", toggleMenu);
+        overlay.addEventListener("click", toggleMenu);
+
+        // Close menu when clicking mobile nav links
+        const mobileNavLinks = document.querySelectorAll(
+          ".mobile-nav-links a, .mobile-logout-btn"
+        );
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener("click", toggleMenu);
+        });
+
+        // Reset menu state on window resize
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            hamburger.classList.remove("active");
+            mobileMenu.classList.remove("active");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "auto";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
